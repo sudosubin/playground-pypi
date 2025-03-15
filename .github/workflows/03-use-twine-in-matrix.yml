@@ -1,0 +1,42 @@
+name: 03-use-twine-in-matrix
+
+on:
+  push: { branches: [main] }
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      matrix:
+        package: [playground-pypi-package-e, playground-pypi-package-f]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: install requirements (build, twine)
+        run: |
+          pip install --no-cache-dir \
+            build==1.2.2.post1 \
+            twine==6.1.0
+
+      - name: build
+        run: pyproject-build
+        working-directory: 03-use-twine-in-matrix/${{ matrix.package }}
+
+      - id: oidc
+        uses: ./.github/actions/fetch-pypi-oidc-token
+
+      - name: publish
+        run: twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ steps.oidc.outputs.token }}
+        working-directory: 03-use-twine-in-matrix/${{ matrix.package }}
