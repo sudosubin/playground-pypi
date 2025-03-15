@@ -1,0 +1,45 @@
+name: 01-use-twine-in-each-directory
+
+on:
+  push: { branches: [main] }
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: install requirements (build, twine)
+        run: |
+          pip install --no-cache-dir \
+            build==1.2.2.post1 \
+            twine==6.1.0
+
+      - name: build
+        run: |
+          for directory in */; do
+            (cd $directory && pyproject-build)
+          done
+        working-directory: 01-use-twine-in-each-directory
+
+      - id: oidc
+        uses: ./.github/actions/fetch-pypi-oidc-token
+
+      - name: publish
+        run: |
+          for directory in */; do
+            (cd $directory && twine upload dist/*)
+          done
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ steps.oidc.outputs.token }}
+        working-directory: 01-use-twine-in-each-directory
