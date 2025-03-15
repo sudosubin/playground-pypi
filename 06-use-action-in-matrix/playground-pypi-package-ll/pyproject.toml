@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "playground-pypi-package-l"
+name = "playground-pypi-package-ll"
 version = "0.1.0"
 description = "A playground for uploading Python packages to PyPI"
 authors = [
