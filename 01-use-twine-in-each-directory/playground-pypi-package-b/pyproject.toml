@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "playground-pypi-package-b"
-version = "0.1.0"
+version = "0.1.1"
 description = "A playground for uploading Python packages to PyPI"
 authors = [
     { name = "Subin Kim", email = "sudosubin@gmail.com" }
