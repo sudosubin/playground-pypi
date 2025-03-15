@@ -7,7 +7,7 @@ name = "playground-pypi-package-g"
 version = "0.1.0"
 description = "A playground for uploading Python packages to PyPI"
 authors = [
-    { name="Subin Kim", email="sudosubin@gmail.com" }
+    { name = "Subin Kim", email = "sudosubin@gmail.com" }
 ]
-license = "MIT"
+license = { "text" = "MIT" }
 dependencies = []
