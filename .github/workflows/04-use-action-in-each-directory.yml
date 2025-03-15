@@ -1,0 +1,39 @@
+name: 04-use-action-in-each-directory
+
+on:
+  push: { branches: [main] }
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: install requirements (build)
+        run: pip install --no-cache-dir build==1.2.2.post1
+
+      - name: build
+        run: |
+          for directory in */; do
+            (cd $directory && pyproject-build)
+          done
+        working-directory: 04-use-action-in-each-directory
+
+      - name: publish (playground-pypi-package-g)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: 04-use-action-in-each-directory/playground-pypi-package-g/dist
+
+      - name: publish (playground-pypi-package-h)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: 04-use-action-in-each-directory/playground-pypi-package-h/dist
