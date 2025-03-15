@@ -1,0 +1,43 @@
+name: 02-use-twine-in-single-directory
+
+on:
+  push: { branches: [main] }
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: install requirements (build, twine)
+        run: |
+          pip install --no-cache-dir \
+            build==1.2.2.post1 \
+            twine==6.1.0
+
+      - name: build
+        run: |
+          for directory in */; do
+            (cd $directory && pyproject-build -o ../dist)
+          done
+        working-directory: 02-use-twine-in-single-directory
+
+      - id: oidc
+        uses: ./.github/actions/fetch-pypi-oidc-token
+
+      - name: publish
+        run: |
+          twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ steps.oidc.outputs.token }}
+        working-directory: 02-use-twine-in-single-directory
