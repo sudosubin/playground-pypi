@@ -35,8 +35,7 @@ jobs:
         uses: ./.github/actions/fetch-pypi-oidc-token
 
       - name: publish
-        run: |
-          twine upload dist/*
+        run: twine upload dist/*
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ steps.oidc.outputs.token }}
